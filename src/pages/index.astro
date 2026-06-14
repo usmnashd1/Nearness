@@ -1,0 +1,51 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { sortPosts, unique } from '../lib/posts';
+
+const posts = sortPosts(await getCollection('posts'));
+const categories = unique(posts.map((post) => post.data.category));
+const tags = unique(posts.flatMap((post) => post.data.tags));
+const base = import.meta.env.BASE_URL;
+const href = (path: string) => `${base}${path.replace(/^\//, '')}`;
+---
+<BaseLayout>
+  <section class="hero">
+    <p class="eyebrow">A personal journal / 2026—</p>
+    <h1>Nearness</h1>
+    <p class="tagline">A small archive for staying sane near the edge of thought.</p>
+    <div class="manifesto">
+      <p>We feel most alive when we are closest to impermanence. We invest ourselves in people, memory, friendship, family, books, poetry, and machines, knowing that each may save us or tear us apart.</p>
+      <p>Then we meet computers: quiet portals of possibility. In lonely nights, they become less like tools and more like companions for thought. This is an attempt to keep the mind alive, preserve fragments of memory, and keep our computers close enough to speak back.</p>
+    </div>
+    <span class="signal" aria-hidden="true"><i></i> transmitting quietly</span>
+  </section>
+
+  <section class="feed-section">
+    <div class="section-heading">
+      <div><p class="eyebrow">The archive, unfolding</p><h2>Latest entries</h2></div>
+      <a href={href('/archive/')}>View all →</a>
+    </div>
+    <div class="post-feed">
+      {posts.slice(0, 8).map((post) => <PostCard post={post} />)}
+    </div>
+  </section>
+
+  <section class="browse-section">
+    <div>
+      <p class="eyebrow">Browse by subject</p>
+      <h2>Categories</h2>
+      <div class="filter-cloud categories">
+        {categories.map((category) => <a href={href(`/category/${category}/`)}>{category}</a>)}
+      </div>
+    </div>
+    <div>
+      <p class="eyebrow">Recurring signals</p>
+      <h2>Tags</h2>
+      <div class="filter-cloud">
+        {tags.map((tag) => <a href={href(`/tags/${encodeURIComponent(tag)}/`)}>#{tag}</a>)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

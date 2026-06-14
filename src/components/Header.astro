@@ -1,0 +1,16 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+const base = import.meta.env.BASE_URL;
+const href = (path: string) => `${base}${path.replace(/^\//, '')}`;
+---
+<header class="site-header">
+  <a class="wordmark" href={href('/')} aria-label="Nearness home">
+    <span class="mark" aria-hidden="true"></span>
+    Nearness
+  </a>
+  <nav aria-label="Main navigation">
+    <a href={href('/archive/')}>Archive</a>
+    <a href={href('/about/')}>About</a>
+    <ThemeToggle />
+  </nav>
+</header>

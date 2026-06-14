@@ -1,0 +1,19 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { sortPosts, unique } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = sortPosts(await getCollection('posts'));
+  return unique(posts.flatMap((post) => post.data.tags)).map((tag) => ({
+    params: { tag }, props: { posts: posts.filter((post) => post.data.tags.includes(tag)) },
+  }));
+}
+const tag = decodeURIComponent(Astro.params.tag || '');
+const { posts } = Astro.props;
+---
+<BaseLayout title={`#${tag}`}>
+  <header class="page-header"><p class="eyebrow">Tag</p><h1>#{tag}</h1><p>{posts.length} connected {posts.length === 1 ? 'fragment' : 'fragments'}.</p></header>
+  <div class="post-feed">{posts.map((post) => <PostCard post={post} />)}</div>
+</BaseLayout>
